@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch v2</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        /* Light theme */
+        .light-theme {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        /* Dark theme */
+        .dark-theme {
+            background-color: #333;
+            color: #f5f5f5;
+        }
+        .container {
+            text-align: center;
+            margin-top: 50px;
+        }
+        #stopwatch {
+            font-size: 48px;
+            margin: 20px;
+        }
+        #timer {
+            font-size: 32px;
+            margin: 20px;
+        }
+        #doneMessage {
+            display: none;
+            font-size: 32px;
+            color: green;
+        }
+        .hidden {
+            display: none;
+        }
+        .button {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+        }
+        .button-dark {
+            background-color: #444;
+            color: #fff;
+        }
+        .button-light {
+            background-color: #f1f1f1;
+            color: #444;
+        }
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+        }
+        .back-button {
+            position: fixed;
+            bottom: 20px;
+            right: 100px;
+        }
+        audio {
+            display: none;
+        }
+        #reminderList {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body class="light-theme">
+    <div class="container">
+        <h1>Stopwatch v2</h1>
+        <div id="stopwatch">00:00:00</div>
+        <div id="timer">
+            <label for="minutesInput">Selesai dalam berapa menit: </label>
+            <input type="number" id="minutesInput" min="1" placeholder="Masukkan menit" required>
+            <button class="button button-light" onclick="startTimer()">Mulai</button>
+        </div>
+        <div id="doneMessage" class="hidden">WAKTU SELESAI</div>
+        <div id="reminder" class="hidden">
+            <label for="reminderMinutes">Perlu waktu berapa menit lagi: </label>
+            <input type="number" id="reminderMinutes" min="1" placeholder="Masukkan menit" required>
+            <button class="button button-light" onclick="setReminder()">Setel Pengingat</button>
+        </div>
+        <div id="reminderList" class="hidden"></div>
+    </div>
+
+    <div class="theme-toggle">
+        <button class="button button-dark" onclick="toggleTheme()">Ganti Tema</button>
+    </div>
+    
+    <div class="back-button">
+        <button class="button button-light" onclick="goToHome()">Ke Beranda</button>
+    </div>
+
+    <audio id="notificationSound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+
+    <script>
+        let stopwatchInterval;
+        let targetTime;
+        let isDarkTheme = false;
+        let minutesInput = document.getElementById('minutesInput');
+        let doneMessage = document.getElementById('doneMessage');
+        let reminder = document.getElementById('reminder');
+        let reminderList = document.getElementById('reminderList');
+        let notificationSound = document.getElementById('notificationSound');
+        let minutesInputReminder = document.getElementById('reminderMinutes');
+        let reminderMinutes;
+
+        function startTimer() {
+            let minutes = parseInt(minutesInput.value);
+            if (isNaN(minutes) || minutes <= 0) {
+                alert('Masukkan waktu yang valid');
+                return;
+            }
+            targetTime = Date.now() + minutes * 60000;
+            stopwatchInterval = setInterval(updateStopwatch, 1000);
+            minutesInput.disabled = true;
+            minutesInputReminder.disabled = false;
+        }
+
+        function updateStopwatch() {
+            let timeLeft = targetTime - Date.now();
+            if (timeLeft <= 0) {
+                clearInterval(stopwatchInterval);
+                doneMessage.classList.remove('hidden');
+                minutesInput.disabled = false;
+                minutesInputReminder.disabled = false;
+                reminder.classList.remove('hidden');
+            } else {
+                let hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                let seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                document.getElementById('stopwatch').innerHTML = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+            }
+        }
+
+        function pad(value) {
+            return value < 10 ? '0' + value : value;
+        }
+
+        function setReminder() {
+            reminderMinutes = parseInt(minutesInputReminder.value);
+            if (isNaN(reminderMinutes) || reminderMinutes <= 0) {
+                alert('Masukkan waktu pengingat yang valid');
+                return;
+            }
+            reminderList.innerHTML = ''; // Reset the list before adding new reminders
+            for (let i = 1; i <= reminderMinutes; i++) {
+                setTimeout(() => {
+                    notificationSound.play();
+                    let reminderItem = document.createElement('div');
+                    reminderItem.innerHTML = `GANTI ${i} menit!`;
+                    reminderItem.style.color = 'red';
+                    reminderList.appendChild(reminderItem);
+                }, i * 60000);
+            }
+        }
+
+        function toggleTheme() {
+            isDarkTheme = !isDarkTheme;
+            document.body.className = isDarkTheme ? 'dark-theme' : 'light-theme';
+        }
+
+        function goToHome() {
+            window.location.href = "file:///D:/AR-RAUDHAH/WEB%20DESIGN/BERANDA.html";
+        }
+    </script>
+</body>
+</html>

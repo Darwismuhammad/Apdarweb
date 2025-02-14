@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stopwatch</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+    :root {
+      --background-color: #f8f9fa;
+      --text-color: #212529;
+      --card-background: #ffffff;
+      --button-background: #0d6efd;
+      --button-text: #ffffff;
+      --button-hover: #0a58ca;
+      --accent-color: #ffc107;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      background: var(--background-color);
+      color: var(--text-color);
+      transition: background 0.3s, color 0.3s;
+      padding: 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header img {
+      width: 120px;
+      height: auto;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 600;
+      margin: 10px 0;
+      color: var(--accent-color);
+    }
+
+    .header h4 {
+      font-size: 18px;
+      margin: 0;
+    }
+
+    .selection {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    #stopwatch-container {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .stopwatch {
+      background: var(--card-background);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 250px;
+      margin-bottom: 20px;
+    }
+
+    .stopwatch h2 {
+      margin-bottom: 10px;
+    }
+
+    .time {
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .marked-times {
+      margin-top: 10px;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    button {
+      background: var(--button-background);
+      color: var(--button-text);
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin: 5px;
+    }
+
+    button:hover {
+      background: var(--button-hover);
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .global-buttons {
+      margin-top: 20px;
+    }
+
+    .theme-switch {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--card-background);
+      padding: 10px;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: background 0.3s;
+    }
+
+    .theme-switch input {
+      appearance: none;
+      width: 40px;
+      height: 20px;
+      background: #ccc;
+      border-radius: 20px;
+      position: relative;
+      outline: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .theme-switch input:checked {
+      background: #0d6efd;
+    }
+
+    .theme-switch input::before {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      border-radius: 50%;
+      top: 1px;
+      left: 1px;
+      transition: transform 0.3s;
+    }
+
+    .theme-switch input:checked::before {
+      transform: translateX(20px);
+    }
+
+    .link-box {
+      background-color: #0d6efd;
+      padding: 5px 10px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .link-box a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .link-box a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 600px) {
+      .stopwatch {
+        width: 100%;
+      }
+      .buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="Logo SMPI Ar Raudhah.png" alt="Logo SMP Islam Ar-Raudhah">
+    <h1>SMP ISLAM AR RAUDHAH</h1>
+    <h4>DARWIS MUHAMMAD, S.Pd</h4>
+  </div>
+
+  <div class="selection">
+    <label for="stopwatch-count">Pilih jumlah stopwatch: </label>
+    <select id="stopwatch-count" onchange="generateStopwatches()">
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+    </select>
+  </div>
+
+  <div id="stopwatch-container"></div>
+
+  <div class="global-buttons">
+    <button id="start-all" onclick="startAll()" disabled>Mulai Semua</button>
+    <button id="stop-all" onclick="stopAll()" disabled>Berhenti Semua</button>
+    <button id="reset-all" onclick="resetAll()" disabled>Reset Semua</button>
+  </div>
+
+  <div class="theme-switch">
+    <label for="theme-toggle">🌙</label>
+    <input type="checkbox" id="theme-toggle" onchange="toggleTheme()">
+    <label for="theme-toggle">☀️</label>
+
+    <div class="link-box">
+      <a href="file:///D:/AR-RAUDHAH/WEB%20DESIGN/BERANDA.html" target="_blank">BERANDA</a>
+    </div>
+  </div>
+
+  <script>
+    function generateStopwatches() {
+      const count = document.getElementById("stopwatch-count").value;
+      const container = document.getElementById("stopwatch-container");
+      container.innerHTML = "";
+
+      for (let i = 0; i < count; i++) {
+        const stopwatch = document.createElement("div");
+        stopwatch.className = "stopwatch";
+        stopwatch.innerHTML = `
+          <h2>Kelompok ${i + 1}</h2>
+          <div class="time" id="time-${i}">00:00:00</div>
+          <div class="buttons">
+            <button onclick="start(${i})" id="start-${i}">Start</button>
+            <button onclick="stop(${i})" id="stop-${i}" disabled>Stop</button>
+            <button onclick="reset(${i})" id="reset-${i}" disabled>Reset</button>
+            <button onclick="markTime(${i})">Tandai Waktu</button>
+          </div>
+          <div class="marked-times" id="marked-${i}">Tandai Waktu:</div>
+        `;
+        container.appendChild(stopwatch);
+      }
+      document.getElementById("start-all").disabled = false;
+      document.getElementById("reset-all").disabled = false;
+    }
+
+    let timers = {};
+
+    function start(index) {
+      if (!timers[index]) {
+        timers[index] = { startTime: 0, elapsedTime: 0, interval: null };
+      }
+      const timer = timers[index];
+      timer.startTime = Date.now() - timer.elapsedTime;
+      timer.interval = setInterval(() => {
+        timer.elapsedTime = Date.now() - timer.startTime;
+        document.getElementById(`time-${index}`).textContent = timeToString(timer.elapsedTime);
+      }, 10);
+      toggleButtons(index, "START");
+      document.getElementById("stop-all").disabled = false;
+    }
+
+    function stop(index) {
+      const timer = timers[index];
+      clearInterval(timer.interval);
+      toggleButtons(index, "STOP");
+    }
+
+    function reset(index) {
+      const timer = timers[index];
+      clearInterval(timer.interval);
+      timer.elapsedTime = 0;
+      document.getElementById(`time-${index}`).textContent = "00:00:00";
+      document.getElementById(`marked-${index}`).innerHTML = "Tandai Waktu:";
+      toggleButtons(index, "RESET");
+    }
+
+    function resetAll() {
+      const count = document.getElementById("stopwatch-count").value;
+      for (let i = 0; i < count; i++) {
+        reset(i);
+      }
+    }
+
+    function markTime(index) {
+      const time = document.getElementById(`time-${index}`).textContent;
+      const markedContainer = document.getElementById(`marked-${index}`);
+      const newMark = document.createElement("div");
+      newMark.textContent = time;
+      markedContainer.appendChild(newMark);
+    }
+
+    function toggleButtons(index, action) {
+      if (action === "START") {
+        document.getElementById(`start-${index}`).disabled = true;
+        document.getElementById(`stop-${index}`).disabled = false;
+        document.getElementById(`reset-${index}`).disabled = false;
+      } else if (action === "STOP") {
+        document.getElementById(`start-${index}`).disabled = false;
+        document.getElementById(`stop-${index}`).disabled = true;
+        document.getElementById(`reset-${index}`).disabled = false;
+      } else if (action === "RESET") {
+        document.getElementById(`start-${index}`).disabled = false;
+        document.getElementById(`stop-${index}`).disabled = true;
+        document.getElementById(`reset-${index}`).disabled = true;
+      }
+    }
+
+    function startAll() {
+      for (let i = 0; i < document.getElementById("stopwatch-count").value; i++) {
+        start(i);
+      }
+      document.getElementById("start-all").disabled = true;
+    }
+
+    function stopAll() {
+      for (let i = 0; i < document.getElementById("stopwatch-count").value; i++) {
+        stop(i);
+      }
+      document.getElementById("stop-all").disabled = true;
+      document.getElementById("start-all").disabled = false;
+    }
+
+    function timeToString(time) {
+      let date = new Date(time);
+      let minutes = String(date.getUTCMinutes()).padStart(2, '0');
+      let seconds = String(date.getUTCSeconds()).padStart(2, '0');
+      let milliseconds = String(Math.floor(date.getUTCMilliseconds() / 10)).padStart(2, '0');
+      return `${minutes}:${seconds}:${milliseconds}`;
+    }
+
+    function toggleTheme() {
+      const isDark = document.getElementById("theme-toggle").checked;
+      if (isDark) {
+        document.documentElement.style.setProperty('--background-color', '#212529');
+        document.documentElement.style.setProperty('--text-color', '#f8f9fa');
+        document.documentElement.style.setProperty('--card-background', '#343a40');
+        document.documentElement.style.setProperty('--button-background', '#495057');
+        document.documentElement.style.setProperty('--button-text', '#f8f9fa');
+        document.documentElement.style.setProperty('--button-hover', '#6c757d');
+        document.documentElement.style.setProperty('--accent-color', '#ffc107');
+      } else {
+        document.documentElement.style.setProperty('--background-color', '#f8f9fa');
+        document.documentElement.style.setProperty('--text-color', '#212529');
+        document.documentElement.style.setProperty('--card-background', '#ffffff');
+        document.documentElement.style.setProperty('--button-background', '#0d6efd');
+        document.documentElement.style.setProperty('--button-text', '#ffffff');
+        document.documentElement.style.setProperty('--button-hover', '#0a58ca');
+        document.documentElement.style.setProperty('--accent-color', '#ffc107');
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => generateStopwatches());
+  </script>
+</body>
+</html>
